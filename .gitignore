@@ -1,0 +1,18 @@
+# ---- .NET ----
+bin/
+obj/
+*.user
+appsettings.Development.json
+appsettings.Production.json
+
+# ---- Angular / Node ----
+ehs-app/node_modules/
+ehs-app/dist/
+ehs-app/.angular/
+ehs-app/src/environments/environment.production.ts
+
+# ---- IDE / OS ----
+.vs/
+.vscode/
+*.swp
+.DS_Store
