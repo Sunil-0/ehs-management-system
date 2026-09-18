@@ -1,0 +1,61 @@
+name: CI
+
+# Triggers: run this workflow on every push to main, and on every pull
+# request targeting main. The PR trigger is what lets you (or a teammate)
+# see the build/test result directly on the PR before merging -- exactly
+# the safety net that makes "require PR before merging" (from M5) meaningful.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Build & Test .NET API
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout: pulls your repo's code onto the runner -- every
+      # workflow needs this as its first step, or there's no code to build.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore EHS.sln
+
+      - name: Build
+        run: dotnet build EHS.sln --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test EHS.Application.Tests --no-build --configuration Release --verbosity normal
+
+  frontend:
+    name: Build Angular App
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ehs-app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ehs-app/package-lock.json
+
+      # npm ci (not npm install): installs EXACTLY what's in package-lock.json,
+      # fails if the lockfile and package.json are out of sync. This is the
+      # standard choice for CI -- reproducible builds, no surprise version bumps.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build -- --configuration production
