@@ -1,0 +1,28 @@
+<h2>All Incidents</h2>
+
+<!-- The "async" pipe subscribes to incidents$ automatically, and
+     unsubscribes automatically when this component is destroyed.
+     "as incidents" gives us a plain array to loop over in the template. -->
+<table *ngIf="incidents$ | async as incidents">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Location</th>
+      <th>Severity</th>
+      <th>Status</th>
+      <th>Reported By</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let incident of incidents" [routerLink]="['/incidents', incident.id]" class="row-link">
+      <td>{{ incident.title }}</td>
+      <td>{{ incident.location }}</td>
+      <td>{{ incident.severityLevel }}</td>
+      <td>
+        <!-- statusLabels map converts the numeric enum into readable text -->
+        <span class="status-chip">{{ statusLabels[incident.status] }}</span>
+      </td>
+      <td>{{ incident.reportedByName }}</td>
+    </tr>
+  </tbody>
+</table>

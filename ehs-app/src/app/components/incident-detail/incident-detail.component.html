@@ -1,0 +1,45 @@
+<div *ngIf="incident as inc">
+  <h2>{{ inc.title }}</h2>
+  <p>{{ inc.description }}</p>
+  <p><strong>Location:</strong> {{ inc.location }} | <strong>Severity:</strong> {{ inc.severityLevel }}</p>
+  <p><strong>Status:</strong> <span class="status-chip">{{ statusLabels[inc.status] }}</span></p>
+  <p><strong>Reported by:</strong> {{ inc.reportedByName }}</p>
+
+  <p *ngIf="actionError" class="error">{{ actionError }}</p>
+
+  <!-- Each block below only renders for the status it applies to --
+       this is the UI directly reflecting your workflow diagram's states.
+       In M4 we'll also gate these behind role guards, not just status. -->
+
+  <section *ngIf="inc.status === IncidentStatus.Submitted && authService.hasRole('EHSManager')">
+    <h3>Assign Investigator</h3>
+    <form [formGroup]="assignForm" (ngSubmit)="assignInvestigator()">
+      <label for="investigatorId">Investigator User ID</label>
+      <input id="investigatorId" type="number" formControlName="investigatorId" />
+      <button type="submit" [disabled]="assignForm.invalid">Assign</button>
+    </form>
+  </section>
+
+  <section *ngIf="(inc.status === IncidentStatus.Assigned || inc.status === IncidentStatus.InvestigationInProgress) && authService.hasRole('Investigator')">
+    <h3>Complete Investigation</h3>
+    <form [formGroup]="investigationForm" (ngSubmit)="completeInvestigation()">
+      <label for="findings">Findings</label>
+      <textarea id="findings" formControlName="findings"></textarea>
+
+      <label for="rootCause">Root Cause</label>
+      <textarea id="rootCause" formControlName="rootCause"></textarea>
+
+      <button type="submit" [disabled]="investigationForm.invalid">Submit Findings</button>
+    </form>
+  </section>
+
+  <section *ngIf="inc.status === IncidentStatus.PendingApproval && authService.hasRole('Manager')">
+    <h3>Manager Decision</h3>
+    <button (click)="approve(true)">Approve &amp; Close</button>
+    <button (click)="approve(false)">Reject</button>
+  </section>
+
+  <section *ngIf="inc.status === IncidentStatus.Closed">
+    <p>This incident is closed.</p>
+  </section>
+</div>

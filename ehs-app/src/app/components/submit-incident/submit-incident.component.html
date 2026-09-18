@@ -1,0 +1,43 @@
+<h2>Report an Incident</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="title">Title</label>
+    <input id="title" type="text" formControlName="title" />
+    <!-- form.get('title')?.touched -> only show errors after the user has
+         interacted with the field, not immediately on page load -->
+    <span *ngIf="form.get('title')?.invalid && form.get('title')?.touched">
+      Title is required (max 200 characters).
+    </span>
+  </div>
+
+  <div>
+    <label for="description">Description</label>
+    <textarea id="description" formControlName="description"></textarea>
+    <span *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
+      Description is required.
+    </span>
+  </div>
+
+  <div>
+    <label for="location">Location</label>
+    <input id="location" type="text" formControlName="location" />
+    <span *ngIf="form.get('location')?.invalid && form.get('location')?.touched">
+      Location is required.
+    </span>
+  </div>
+
+  <div>
+    <label for="severityLevel">Severity (1-5)</label>
+    <input id="severityLevel" type="number" formControlName="severityLevel" min="1" max="5" />
+    <span *ngIf="form.get('severityLevel')?.invalid && form.get('severityLevel')?.touched">
+      Severity must be between 1 and 5.
+    </span>
+  </div>
+
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+
+  <button type="submit" [disabled]="submitting">
+    {{ submitting ? 'Submitting...' : 'Submit Incident' }}
+  </button>
+</form>

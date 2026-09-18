@@ -1,0 +1,25 @@
+<h2>Log In</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email" />
+  </div>
+
+  <div>
+    <label for="password">Password</label>
+    <input id="password" type="password" formControlName="password" />
+  </div>
+
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+
+  <button type="submit" [disabled]="form.invalid">Log In</button>
+</form>
+
+<p>
+  Test users (password for all: <code>Password123!</code>):<br />
+  alice&#64;ehs.local (Employee) &middot;
+  bob&#64;ehs.local (EHSManager) &middot;
+  carol&#64;ehs.local (Investigator) &middot;
+  dave&#64;ehs.local (Manager)
+</p>
